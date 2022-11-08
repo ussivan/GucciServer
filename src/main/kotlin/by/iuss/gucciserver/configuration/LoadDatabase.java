@@ -1,5 +1,7 @@
-package by.iuss.gucciserver;
+package by.iuss.gucciserver.configuration;
 
+import by.iuss.gucciserver.entity.Kal;
+import by.iuss.gucciserver.repository.KalRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;

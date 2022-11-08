@@ -1,4 +1,4 @@
-package by.iuss.gucciserver;
+package by.iuss.gucciserver.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
