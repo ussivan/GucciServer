@@ -20,12 +20,11 @@ public class KalController {
 
     private final KalRepository kalRepository;
 
-    @Autowired
-    private FileStorageService fileStorageService;
+    private final FileStorageService fileStorageService;
 
-
-    public KalController(KalRepository kalRepository) {
+    public KalController(KalRepository kalRepository, FileStorageService fileStorageService) {
         this.kalRepository = kalRepository;
+        this.fileStorageService = fileStorageService;
     }
 
     @GetMapping("/gucci")
@@ -33,27 +32,4 @@ public class KalController {
         return kalRepository.findAll();
     }
 
-    @GetMapping("/downloadFile")
-    public ResponseEntity<Resource> downloadFile(HttpServletRequest request) {
-        // Load file as Resource
-        Resource resource = fileStorageService.loadFileAsResource("kal");
-
-        // Try to determine file's content type
-        String contentType = null;
-        try {
-            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-        } catch (IOException ex) {
-            System.out.println("kal");
-        }
-
-        // Fallback to the default content type if type could not be determined
-        if(contentType == null) {
-            contentType = "application/octet-stream";
-        }
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-                .body(resource);
-    }
 }

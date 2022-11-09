@@ -40,7 +40,7 @@ class LoadDatabase {
     CommandLineRunner initFileDownload(KalRepository repository) {
         return args -> {
             log.info("технологии заебали нахуй");
-            youTubeService.downloadVideo("BArRk30QKM8");
+            youTubeService.searchVideos("пудж", youTubeService.auth());
         };
     }
 
