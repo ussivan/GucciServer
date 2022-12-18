@@ -1,6 +1,7 @@
 package by.iuss.gucciserver.controller;
 
 import by.iuss.gucciserver.api.GucciVideoSearchResult;
+import by.iuss.gucciserver.aspect.Profile;
 import by.iuss.gucciserver.configuration.GucciProperties;
 import by.iuss.gucciserver.service.FileStorageService;
 import by.iuss.gucciserver.service.YouTubeApiService;
@@ -8,7 +9,6 @@ import by.iuss.gucciserver.service.YouTubeService;
 import com.github.kiulian.downloader.downloader.YoutubeProgressCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -37,13 +37,15 @@ public class GucciApiController {
         this.properties = properties;
     }
 
+    @Profile
     @GetMapping("/gucci/search")
-    public List<GucciVideoSearchResult> all(@RequestParam String query) throws IOException {
+    public List<GucciVideoSearchResult> search(@RequestParam String query) throws IOException {
         return youTubeApiService.searchVideos(query);
     }
 
+    @Profile
     @GetMapping("/gucci/download")
-    public ResponseEntity<Resource> downloadFile(@RequestParam String videoId, HttpServletRequest request) {
+    public ResponseEntity<Resource> downloadFile(@RequestParam(value = "id") String videoId, @RequestParam(value = "t", required = false) String type, HttpServletRequest request) {
         String downloadedFileName = videoId + System.currentTimeMillis();
         YoutubeProgressCallback<File> callback = new YoutubeProgressCallback<>() {
             @Override
@@ -63,7 +65,15 @@ public class GucciApiController {
                 log.error("Something went wrong while downloading file {}, error: {}", downloadedFileName, throwable);
             }
         };
-        File downloadedFile = youTubeApiService.downloadVideo(videoId, downloadedFileName, callback, YouTubeService.DownloadFileFormat.BEST_AUDIO);
+        YouTubeService.DownloadFileFormat format = YouTubeService.DownloadFileFormat.BEST_AUDIO;
+        if (type == null || type.equals("a")) {
+            format = YouTubeService.DownloadFileFormat.BEST_AUDIO;
+        } else if (type.equals("av")) {
+            format = YouTubeService.DownloadFileFormat.BEST_AUDIO_AND_VIDEO;
+        } else if (type.equals("v")) {
+            format = YouTubeService.DownloadFileFormat.BEST_VIDEO;
+        }
+        File downloadedFile = youTubeApiService.downloadVideo(videoId, downloadedFileName, callback, format);
         return sendFile(downloadedFile, request);
     }
 

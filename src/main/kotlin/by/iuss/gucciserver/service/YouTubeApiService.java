@@ -2,6 +2,7 @@ package by.iuss.gucciserver.service;
 
 
 import by.iuss.gucciserver.api.GucciVideoSearchResult;
+import by.iuss.gucciserver.aspect.Profile;
 import com.github.kiulian.downloader.downloader.YoutubeProgressCallback;
 import com.google.api.services.youtube.model.SearchResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ public class YouTubeApiService {
         this.youTubeService = youTubeService;
     }
 
+    @Profile
     public List<GucciVideoSearchResult> searchVideos(String query) throws IOException {
         List<SearchResult> searchResult = youTubeService.searchVideos(query, youTubeService.auth());
 
@@ -32,6 +34,7 @@ public class YouTubeApiService {
         ).collect(Collectors.toList());
     }
 
+    @Profile
     public File downloadVideo(String id, String outputFileName, YoutubeProgressCallback<File> callback, YouTubeService.DownloadFileFormat format) {
         return youTubeService.downloadVideo(id, outputFileName, callback, format);
     }
